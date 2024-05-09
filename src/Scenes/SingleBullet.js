@@ -14,7 +14,7 @@ class SingleBullet extends Phaser.Scene {
     preload() {
         this.load.setPath("./assets/");
         this.load.image("elephant", "elephant.png");
-        this.load.image("heart", "laseRed12.png");
+        this.load.image("heart", "laserRed12.png");
     }
 
     create() {

@@ -13,10 +13,11 @@ class ArrayBoom extends Phaser.Scene {
         // This array will hold bindings (pointers) to bullet sprites
         this.my.sprite.bullet = [];   
         this.maxBullets = 10;           // Don't create more than this many bullets
-        
+        this.my.sprite.laser = [];
         this.myScore = 0;       // record a score as a class variable
         // More typically want to use a global variable for score, since
         // it will be used across multiple scenes
+        this.playerHealth = 3;
     }
 
     preload() {
@@ -24,6 +25,8 @@ class ArrayBoom extends Phaser.Scene {
         this.load.image("elephant", "elephant.png");
         this.load.image("heart", "laserRed12.png");
         this.load.image("hippo", "shipBlue_manned.png");
+        this.load.image("alien", "shipGreen_manned.png");
+        this.load.image("laser", "laserBlue3.png");
 
         // For animation
         this.load.image("whitePuff00", "whitePuff00.png");
@@ -53,6 +56,10 @@ class ArrayBoom extends Phaser.Scene {
         my.sprite.hippo.setScale(0.5);
         my.sprite.hippo.scorePoints = 25;
 
+        my.sprite.alien = this.add.sprite(game.config.width/2, 80, "alien");
+        my.sprite.alien.setScale(0.5);
+        my.sprite.alien.scorePoints = 10;
+
         // Notice that in this approach, we don't create any bullet sprites in create(),
         // and instead wait until we need them, based on the number of space bar presses
 
@@ -79,6 +86,7 @@ class ArrayBoom extends Phaser.Scene {
         // Set movement speeds (in pixels/tick)
         this.playerSpeed = 5;
         this.bulletSpeed = 5;
+        this.laserSpeed = 5;
 
         // update HTML description
         document.getElementById('description').innerHTML = '<h2>Array Boom.js</h2><br>A: left // D: right // Space: fire/emit // S: Next Scene'
@@ -86,6 +94,7 @@ class ArrayBoom extends Phaser.Scene {
         // Put score on screen
         my.text.score = this.add.bitmapText(580, 0, "rocketSquare", "Score " + this.myScore);
 
+        my.text.health = this.add.bitmapText(200, 0, "rocketSquare", "Health " + this.playerHealth);
         // Put title on screen
         this.add.text(10, 5, "Hippo Hug!", {
             fontFamily: 'Times, serif',
@@ -126,6 +135,15 @@ class ArrayBoom extends Phaser.Scene {
             }
         }
 
+        this.counter++;
+
+        if (this.counter % 50 == 0) {
+            my.sprite.laser.push(this.add.sprite(
+                my.sprite.hippo.x, my.sprite.hippo.y-(my.sprite.hippo.displayHeight/2), "laser")
+            );
+        }
+
+
         // Remove all of the bullets which are offscreen
         // filter() goes through all of the elements of the array, and
         // only returns those which **pass** the provided test (conditional)
@@ -163,11 +181,38 @@ class ArrayBoom extends Phaser.Scene {
             }
         }
 
+        for (let bullet of my.sprite.bullet) {
+            if (this.collides(my.sprite.alien, bullet)) {
+                // start animation
+                this.puff = this.add.sprite(my.sprite.alien.x, my.sprite.alien.y, "whitePuff03").setScale(0.25).play("puff");
+                // clear out bullet -- put y offscreen, will get reaped next update
+                bullet.y = -100;
+                my.sprite.alien.visible = false;
+                my.sprite.alien.x = -100;
+                // Update score
+                this.myScore += my.sprite.alien.scorePoints;
+                this.updateScore();
+                // Play sound
+                this.sound.play("dadada", {
+                    volume: 1   // Can adjust volume using this, goes from 0 to 1
+                });
+                // Have new hippo appear after end of animation
+                this.puff.on(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+                    this.my.sprite.alien.visible = true;
+                    this.my.sprite.alien.x = Math.random()*config.width;
+                }, this);
+
+            }
+        }
+
+
         // Make all of the bullets move
         for (let bullet of my.sprite.bullet) {
             bullet.y -= this.bulletSpeed;
         }
-
+        for (let laser of my.sprite.laser){
+            bullet.y += this.laserSpeed;
+        }
         if (Phaser.Input.Keyboard.JustDown(this.nextScene)) {
             this.scene.start("fixedArrayBullet");
         }
@@ -187,4 +232,4 @@ class ArrayBoom extends Phaser.Scene {
     }
 
 }
-         
+    
