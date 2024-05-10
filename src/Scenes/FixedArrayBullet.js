@@ -104,9 +104,7 @@ class FixedArrayBullet extends Phaser.Scene {
             }
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.nextScene)) {
-            this.scene.start("groupBullet");
-        }
+       
 
     }
 }
