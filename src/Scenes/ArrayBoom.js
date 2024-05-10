@@ -143,7 +143,7 @@ class ArrayBoom extends Phaser.Scene {
             );
         }
 
-
+        
         // Remove all of the bullets which are offscreen
         // filter() goes through all of the elements of the array, and
         // only returns those which **pass** the provided test (conditional)
@@ -205,6 +205,29 @@ class ArrayBoom extends Phaser.Scene {
             }
         }
 
+        for (let laser of my.sprite.laser) {
+            if (this.collides(my.sprite.elephant, laser)) {
+                // start animation
+                
+                // clear out bullet -- put y offscreen, will get reaped next update
+                bullet.y = -100;
+                
+                // Update score
+                this.playerHealth -= 1;
+                this.updateHealth();
+                // Play sound
+                this.sound.play("dadada", {
+                    volume: 1   // Can adjust volume using this, goes from 0 to 1
+                });
+
+            }
+        }
+
+
+
+        for (let alien of this.my.sprite.alien){
+            this.my.sprite.alien.y += this.playerSpeed;
+        }
 
         // Make all of the bullets move
         for (let bullet of my.sprite.bullet) {
@@ -229,6 +252,10 @@ class ArrayBoom extends Phaser.Scene {
     updateScore() {
         let my = this.my;
         my.text.score.setText("Score " + this.myScore);
+    }
+    updateHealth(){
+        let my = this.my
+        my.text.health.setText("Health " + this.playerHealth);
     }
 
 }
