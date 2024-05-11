@@ -61,6 +61,22 @@ class ClassBullet extends Phaser.Scene {
         // update HTML description
         document.getElementById('description').innerHTML = '<h2>Class Bullet.js</h2><br>A: left // D: right // Space: fire/emit // S: Next Scene'
 
+        this.add.text(200, 200, "Laser Forest!", {
+            fontFamily: 'Times, serif',
+            fontSize: 40,
+            wordWrap: {
+                width: 60
+            }
+        });
+
+        this.add.text(400, 200, "Press-S To Start Game!", {
+            fontFamily: 'Times, serif',
+            fontSize: 40,
+            wordWrap: {
+                width: 60
+            }
+        });
+
     }
 
     update() {

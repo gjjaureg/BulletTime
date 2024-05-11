@@ -17,7 +17,7 @@ class ArrayBoom extends Phaser.Scene {
         this.myScore = 0;       // record a score as a class variable
         // More typically want to use a global variable for score, since
         // it will be used across multiple scenes
-        this.playerHealth = 50;
+        this.playerHealth = 10;
 
         this.counter = 0
     }
@@ -57,6 +57,10 @@ class ArrayBoom extends Phaser.Scene {
         my.sprite.hippo = this.add.sprite(game.config.width/2, 80, "hippo");
         my.sprite.hippo.setScale(0.5);
         my.sprite.hippo.scorePoints = 25;
+
+        my.sprite.hippo2 = this.add.sprite(game.config.width/2, 80, "hippo");
+        my.sprite.hippo2.setScale(0.5);
+        my.sprite.hippo2.scorePoints = 25;
 
         my.sprite.alien = this.add.sprite(game.config.width/2, 80, "alien");
         my.sprite.alien.setScale(0.5);
@@ -98,7 +102,7 @@ class ArrayBoom extends Phaser.Scene {
 
         my.text.health = this.add.bitmapText(200, 0, "rocketSquare", "Health " + this.playerHealth);
         // Put title on screen
-        this.add.text(10, 5, "Hippo Hug!", {
+        this.add.text(10, 5, "Fire Laser's!", {
             fontFamily: 'Times, serif',
             fontSize: 24,
             wordWrap: {
@@ -142,6 +146,12 @@ class ArrayBoom extends Phaser.Scene {
         if (this.counter % 100 == 0) {
             my.sprite.laser.push(this.add.sprite(
                 my.sprite.hippo.x, my.sprite.hippo.y-(my.sprite.hippo.displayHeight/4), "laser")
+            );
+        };
+
+        if (this.counter % 100 == 0) {
+            my.sprite.laser.push(this.add.sprite(
+                my.sprite.hippo2.x, my.sprite.hippo2.y-(my.sprite.hippo2.displayHeight/4), "laser")
             );
         };
 
@@ -189,6 +199,30 @@ class ArrayBoom extends Phaser.Scene {
                 this.puff.on(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
                     this.my.sprite.hippo.visible = true;
                     this.my.sprite.hippo.x = Math.random()*config.width;
+                }, this);
+
+            }
+        }
+
+        for (let bullet of my.sprite.bullet) {
+            if (this.collides(my.sprite.hippo2, bullet)) {
+                // start animation
+                this.puff = this.add.sprite(my.sprite.hippo2.x, my.sprite.hippo2.y, "whitePuff03").setScale(0.25).play("puff");
+                // clear out bullet -- put y offscreen, will get reaped next update
+                bullet.y = -100;
+                my.sprite.hippo2.visible = false;
+                my.sprite.hippo2.x = -100;
+                // Update score
+                this.myScore += my.sprite.hippo2.scorePoints;
+                this.updateScore();
+                // Play sound
+                this.sound.play("dadada", {
+                    volume: 1   // Can adjust volume using this, goes from 0 to 1
+                });
+                // Have new hippo appear after end of animation
+                this.puff.on(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+                    this.my.sprite.hippo2.visible = true;
+                    this.my.sprite.hippo2.x = Math.random()*config.width;
                 }, this);
 
             }
@@ -261,7 +295,9 @@ class ArrayBoom extends Phaser.Scene {
         }
         
        
-       
+        if (my.sprite.alien.y >= my.sprite.elephant.y + 5){
+            this.my.sprite.alien.y = 80;
+        }
 
         // Make all of the bullets move
         for (let bullet of my.sprite.bullet) {

@@ -47,6 +47,24 @@ class FixedArrayBullet extends Phaser.Scene {
         this.playerSpeed = 5;
         this.bulletSpeed = 5;
 
+
+
+        this.add.text(200, 200, "The End", {
+            fontFamily: 'Times, serif',
+            fontSize: 40,
+            wordWrap: {
+                width: 60
+            }
+        });
+
+        this.add.text(400, 200, "Press-S To Go To Title", {
+            fontFamily: 'Times, serif',
+            fontSize: 40,
+            wordWrap: {
+                width: 60
+            }
+        });
+
         // update HTML description
         document.getElementById('description').innerHTML = '<h2>Fixed Array Bullet.js</h2><br>A: left // D: right // Space: fire/emit // S: Next Scene'
 
@@ -88,6 +106,10 @@ class FixedArrayBullet extends Phaser.Scene {
                 }
             }
             
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.nextScene)) {
+            this.scene.start("classBullet");
         }
 
         // Make all of the bullets move
